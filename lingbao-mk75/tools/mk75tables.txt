@@ -1,0 +1,5 @@
+# Data tables in the stock firmware that point to code (read by tools/mk75asm.py), found by hand.
+# ptr ADDR COUNT: COUNT Keil generic pointers to code (0xFF, hi, lo), called through ?C?ICALL (0x4CA1)
+# 0x5AD6: USB request handlers (0x53EA = report-6 GET_REPORT). The reader is not identified yet; every target follows a
+# RET/LJMP and starts with a setup-packet read (MOV DPTR,#0x0EAF..0x0ED5), and 0x000E is LJMP 0xEE9F.
+ptr 5ad6 21

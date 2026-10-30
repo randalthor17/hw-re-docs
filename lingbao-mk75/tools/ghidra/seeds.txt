@@ -1,0 +1,16 @@
+# extra code entry points (hex), one per line: found by hand, e.g. computed jump tables
+# report-6 SET dispatcher table @0x0495 (cmd 0x03..0x0a)
+4ad
+4df
+4e5
+505
+56e
+584
+# report-6 GET_REPORT handler and GET dispatcher (cmd 0x82..0x8a)
+53ea
+5506
+# no static reference found (dead code, or reached through the Keil library's computed jump at 0x4AA6); they follow a RET and decode cleanly
+49b1
+4a54
+a9a2
+b1a0
