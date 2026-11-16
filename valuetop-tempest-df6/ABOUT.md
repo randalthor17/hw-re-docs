@@ -1,6 +1,7 @@
 ## ValueTop Tempest DF6 Display
 
 - **What it is:** The segmented LCD built into the ValueTop Tempest DF6 case. It shows three readings at once: CPU temperature, CPU cooler speed (RPM) and GPU temperature.
+- **Digits:** Two for the CPU temperature, four for the cooler RPM and two for the GPU temperature. It does not hold a value by itself: the host must keep sending readings.
 - **Input:** Nothing is read back from the display. The host sends readings and that is the whole protocol.
 - **Connectivity:**
 	- **Wired:** USB, appears as VID:PID `5131:2007`. It has no manufacturer or product string, so Linux names it "HID 5131:2007".

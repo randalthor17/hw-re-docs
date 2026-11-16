@@ -8,7 +8,7 @@ Status values:
 - **Derived**: worked out from a table in this document, not from the device.
 - **Untested**: not tried, or not known.
 
-The display has **one command**, an output report that carries the three readings. It is a one-way channel: the host sends, and nothing in the protocol asks the display for a reply. Each report replaces what is shown.
+The display has **one command**, an output report that carries the three readings. It is a one-way channel: the host sends, and nothing in the protocol asks the display for a reply. Each report replaces what is shown, and the display shows nothing on its own: it needs a steady stream of reports.
 
 ---
 
@@ -59,14 +59,16 @@ Every update is one transfer of **63 bytes** on the interrupt OUT endpoint. Ther
 | **Byte Index** | **Field Name**    | **Description / Value**                                                                  | **Status**  |
 | -------------- | ----------------- | ---------------------------------------------------------------------------------------- | ----------- |
 | **`0`**        | Padding           | `00`                                                                                     | Verified (write) |
-| **`1`**        | CPU Temperature   | One byte, whole degrees Celsius                                                          | Verified (write) |
+| **`1`**        | CPU Temperature   | One byte, whole degrees Celsius. The display has **2 digits** for it                | Verified (write) |
 | **`2–4`**      | Padding           | `00`                                                                                     | Verified (write) |
-| **`5–6`**      | CPU Cooler RPM    | 16-bit **big-endian**, high byte first. **Not** the number shown: see [RPM Display Quirk](#rpm-display-quirk) | Verified (write) |
+| **`5–6`**      | CPU Cooler RPM    | 16-bit **big-endian**, high byte first. The display has **4 digits** for it. **Not** the number shown: see [RPM Display Quirk](#rpm-display-quirk) | Verified (write) |
 | **`7–8`**      | Padding           | `00`                                                                                     | Verified (write) |
-| **`9`**        | GPU Temperature   | One byte, whole degrees Celsius                                                          | Verified (write) |
+| **`9`**        | GPU Temperature   | One byte, whole degrees Celsius. The display has **2 digits** for it                | Verified (write) |
 | **`10–62`**    | Padding           | `00`                                                                                     | Verified (write) |
 
-There is no checksum and no magic byte. The drivers refresh once a second.
+There is no checksum and no magic byte.
+
+**The display does not hold a value.** It shows a reading only while reports keep arriving, so a host has to send continuously. The drivers send once a second. How long the display can go without a report before it stops showing the value was not measured.
 
 ```
 // One update. RPM is the value the host wants shown.
@@ -88,8 +90,7 @@ An API that takes a numbered report (the Linux kernel's `hid_hw_output_report`, 
 
 | **Question**                                                                 | **Status** |
 | ---------------------------------------------------------------------------- | ---------- |
-| Whether the display keeps a value when updates stop, or blanks it            | Untested   |
-| How many digits each field can show, and what happens above 99 °C or 9999 RPM | Untested   |
+| What the display shows for a temperature above 99 °C (it has two digits), and how soon it stops showing a value after reports stop | Untested   |
 | Whether a 64-byte transfer is accepted as well as a 63-byte one              | Untested   |
 | Whether a temperature of `0` blanks the field or shows `0`                   | Untested   |
 | What the Input and Feature reports contain                                   | Untested   |
