@@ -7,5 +7,5 @@
 	- Full-speed USB (12 Mbit/s), one HID interface, bus powered (the descriptor asks for 100 mA). `bcdDevice` is `1.00`.
 - **Protocol:** One 63-byte report on an interrupt endpoint. Three fields: CPU temperature, cooler RPM and GPU temperature. There is no handshake, no reply and no checksum that the host uses. See [PROTOCOL.md](PROTOCOL.md).
 - **Quirk:** The display shows a different number from the one it is sent for every RPM value of 2560 and above unless the host pre-compensates the value it sends. Two ranges (2560–2599 and 7660–7679) cannot be shown at all. The rules are in [PROTOCOL.md](PROTOCOL.md#rpm-display-quirk).
-- **Firmware:** Not examined. No firmware image, update flow or vendor software was looked at for this document.
+- **Firmware:** Not examined. No firmware image or update flow was looked at. The protocol comes from a packet capture of the vendor's own software plus trial and error on the unit.
 - **Ecosystem:** Nothing on a normal Linux desktop reads or writes this device, so it needs a small program that copies sensor readings to it. Which hwmon chip counts as "the CPU" or "the cooler" is a choice of that program, not something the display decides.

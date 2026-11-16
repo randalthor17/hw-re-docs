@@ -1,10 +1,10 @@
 
-**Note:** Tested on one ValueTop Tempest DF6 display (`5131:2007`, `bcdDevice` 1.00). The USB descriptors were read from the unit. The report layout and the RPM rules are what the working drivers send (a userspace program using libusb, and a kernel HID driver); they were **not re-run on the wire for this document**, and nothing here was found by decoding firmware. Each entry says how far it was checked.
+**Note:** Tested on one ValueTop Tempest DF6 display (`5131:2007`, `bcdDevice` 1.00). The USB descriptors were read from the unit. The report layout was taken from a **packet capture of the vendor's own software** talking to the display, then confirmed by sending reports of my own and watching what the display showed. The RPM rules were found by **trial and error**: sending values and reading what the display showed. Both are implemented in a userspace program (libusb) and a kernel HID driver. Nothing here was found by decoding firmware. Each entry says how far it was checked.
 
 Status values:
 
 - **Verified (read)**: read from the unit while writing this document.
-- **Host tool**: the layout the working drivers use. The display shows what is expected; it was not re-checked here.
+- **Verified (write)**: sent to the unit and the display showed the expected numbers. For the layout, it also matches the vendor software's captured traffic.
 - **Derived**: worked out from a table in this document, not from the device.
 - **Untested**: not tried, or not known.
 
@@ -58,13 +58,13 @@ Every update is one transfer of **63 bytes** on the interrupt OUT endpoint. Ther
 
 | **Byte Index** | **Field Name**    | **Description / Value**                                                                  | **Status**  |
 | -------------- | ----------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| **`0`**        | Padding           | `00`                                                                                     | Host tool   |
-| **`1`**        | CPU Temperature   | One byte, whole degrees Celsius                                                          | Host tool   |
-| **`2–4`**      | Padding           | `00`                                                                                     | Host tool   |
-| **`5–6`**      | CPU Cooler RPM    | 16-bit **big-endian**, high byte first. **Not** the number shown: see [RPM Display Quirk](#rpm-display-quirk) | Host tool |
-| **`7–8`**      | Padding           | `00`                                                                                     | Host tool   |
-| **`9`**        | GPU Temperature   | One byte, whole degrees Celsius                                                          | Host tool   |
-| **`10–62`**    | Padding           | `00`                                                                                     | Host tool   |
+| **`0`**        | Padding           | `00`                                                                                     | Verified (write) |
+| **`1`**        | CPU Temperature   | One byte, whole degrees Celsius                                                          | Verified (write) |
+| **`2–4`**      | Padding           | `00`                                                                                     | Verified (write) |
+| **`5–6`**      | CPU Cooler RPM    | 16-bit **big-endian**, high byte first. **Not** the number shown: see [RPM Display Quirk](#rpm-display-quirk) | Verified (write) |
+| **`7–8`**      | Padding           | `00`                                                                                     | Verified (write) |
+| **`9`**        | GPU Temperature   | One byte, whole degrees Celsius                                                          | Verified (write) |
+| **`10–62`**    | Padding           | `00`                                                                                     | Verified (write) |
 
 There is no checksum and no magic byte. The drivers refresh once a second.
 
@@ -110,7 +110,7 @@ The display firmware does not show the number it is sent. For a 16-bit value `i`
 | `7680` and above       | `tens_ones` < 80       | `i + 20`         |
 | `7680` and above       | `tens_ones` ≥ 80       | `i − 80`         |
 
-Status: **Host tool**. The table is the behaviour the drivers compensate for.
+Status: **Verified (write)**, found by trial and error on the unit. The drivers compensate for exactly this behaviour.
 
 The host therefore sends a **pre-compensated** value: it picks the `i` whose shown number is the one it wants.
 
